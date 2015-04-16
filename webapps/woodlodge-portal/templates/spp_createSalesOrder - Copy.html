@@ -1,0 +1,39 @@
+<div>		
+		<div class="text-center"><h2>Create Sales Order</h2></div>
+		</br></br>
+		<p> Please complete form</p>
+		</br>
+		
+		<form>
+			Order Request ID: <input type="text" ng-model="formInput.value.orderRequest.id">
+			Order Request Date: <input type="text" ng-model="formInput.value.orderRequest.date">
+			Seller ID <input type="text" ng-model="formInput.value.orderRequest.seller.id">
+			Seller Name <input type="text" ng-model="formInput.value.orderRequest.seller.name">
+			Customer ID <input type="text" ng-model="formInput.value.orderRequest.customer.id">
+			Customer Name <input type="text" ng-model="formInput.value.orderRequest.customer.name">
+			Existing Customer <input type="checkbox" ng-model="formInput.value.orderRequest.customer.isExistingCustomer">
+			
+			Stock Code <input  type="text" ng-model="formInput.value.orderRequest.item[0].stockCode">
+			Name <input  type="text" ng-model="formInput.value.orderRequest.item[0].name">
+			Quantity <input  type="text" ng-model="formInput.value.orderRequest.item[0].quantity">
+			Agreed Price <input  type="text" ng-model="formInput.value.orderRequest.item[0].agreedPrice">
+			
+			Stock Code <input  type="text" ng-model="formInput.value.orderRequest.item[1].stockCode">
+			Name <input  type="text" ng-model="formInput.value.orderRequest.item[1].name">
+			Quantity <input  type="text" ng-model="formInput.value.orderRequest.item[1].quantity">
+			Agreed Price <input  type="text" ng-model="formInput.value.orderRequest.item[1].agreedPrice">
+
+		</form>
+
+		</br>
+		
+		<div class="pull-right">
+			<button class="btn btn-danger" ng-click="submit()">Submit</button>
+			<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+		</div>
+</div>
+
+
+
+
+

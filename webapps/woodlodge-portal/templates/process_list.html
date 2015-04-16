@@ -1,0 +1,23 @@
+<div>		
+		<div class="text-center"><h2>Start Process</h2></div>
+		</br></br>
+		<p> Please select a process</p>
+		</br>
+		
+
+		<table class="table table-hover">
+			<th> Process Name </th>
+			<th> ID </th>
+			<tr ng-repeat="process in processList.data">
+			<td><a href="#{{process.key}}">{{process.name}}</a></td> 
+			<td>{{process.id}}</td>
+
+				
+			</tr>
+		</table>
+		</br>
+		
+		<div class="pull-right">
+			<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+		</div>
+</div>

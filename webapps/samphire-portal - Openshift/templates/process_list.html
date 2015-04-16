@@ -1,0 +1,25 @@
+<div>		
+	<div class="text-center"><h2>Start Process</h2></div>
+	</BR>
+	
+	<table class="table table-hover">
+		<thead>
+		<tr>
+			<th></th>
+			<th> Process Name </th>
+			<th> ID </th>
+		</tr>
+		</thead>
+		<tr ng-repeat="process in processList.data">
+			<td><input type="radio" ng-click="editData.process = process"></td>
+			<td>{{process.name}}</td> 
+			<td>{{process.id}}</td>
+		</tr>
+	</table>
+		</br>
+		
+		<div class="pull-right">
+			<button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+			<button class="btn btn-primary" ng-click="setSelectedProcess()">Submit</button>
+		</div>
+</div>

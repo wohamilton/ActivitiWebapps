@@ -1,0 +1,38 @@
+<div>		
+		<div class="text-center"><h2>Approve Backorder</h2></div>
+		</br></br>
+		<p> Please review the following order request. The highlighted items are not currently in stock, please decide whether to complete the order and create a backorder for the surplus or cancel the order. </p>
+		</br>
+		
+		<p class="text-danger">{{selectedTaskData.id}}</p>
+		
+			
+		<table class="table table-hover" >
+			<th style="text-align:center"> Name </th>
+			<th style="text-align:center"> Number in Stock </th>
+			<th style="text-align:center"> Quantity Requested </th>
+			<th style="text-align:center"> Agreed Price per Item </th>
+			<tr ng-repeat="item in selectedTaskData.items" style="text-align:center">
+				<td ng-if="!item.isInStock" class="outOfStock">{{item.name}}</td>
+				<td ng-if="item.isInStock">{{item.name}}</td>
+				
+				<td ng-if="!item.isInStock" class="outOfStock">{{item.numberInStock}}</td>
+				<td ng-if="item.isInStock">{{item.numberInStock}}</td>
+				
+				<td ng-if="!item.isInStock" class="outOfStock">{{item.quantity}}</td>
+				<td ng-if="item.isInStock">{{item.quantity}}</td>
+				
+				<td ng-if="!item.isInStock" class="outOfStock">{{item.agreedPrice}}</td>
+				<td ng-if="item.isInStock">{{item.agreedPrice}}</td>
+				
+				
+			</tr>
+		</table>
+		</br>
+		
+		<div class="pull-right">
+			<button class="btn btn-primary" ng-click="approve()">Approve</button>
+			<button class="btn btn-danger" ng-click="reject()">Reject</button>
+			<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+		</div>
+</div>

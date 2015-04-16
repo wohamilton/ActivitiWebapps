@@ -1,0 +1,44 @@
+.validationMessage{
+	display: inline-block;
+}
+
+.vertical-center {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}
+
+html,body{
+	height:100%; 
+}
+
+.body-container{
+	height:80%;
+}
+
+.taskViewerDiv{
+	background-color: white;
+}
+
+.headerDiv{
+	border-bottom: 1px solid black;
+}
+
+.header-row{
+	height:20%
+}
+
+.body-row{
+	height:70%;
+}
+
+.taskListDiv{
+	border-right: 1px solid black;
+	height:120%;
+}
+
+.outOfStock{
+	background-color:#F78181;
+}
