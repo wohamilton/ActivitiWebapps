@@ -1,0 +1,72 @@
+<div>		
+		<div class="text-center"><h3>Enter Enquiry Details</h3></div>
+		</br>
+		
+		<p> 
+			Please enter the details of the enquiry in the form below and select the template which best suits the enquiry. These values will then be
+			injected into the template and displayed for review.
+		</p>
+		
+		</br>
+						
+		<table class="table">
+			<tr>
+				<td>
+					<p><span class="glyphicon glyphicon-list-alt"></span> Response Template: </p> 
+				</td>
+				<td>
+					<select class="form-control" ng-model="enquiryDetails.templateObject" ng-options="item.shortName for item in responseTemplates">
+						<option value="">-- select template --</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p><span class="glyphicon glyphicon-font"></span> Customer Name: </p>
+				</td>
+				<td>
+					<input class="form-control" type="text" ng-model="enquiryDetails.name">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p><span class="glyphicon glyphicon-calendar"></span> From Date: </p>
+				</td>
+				<td>
+					<input class="form-control"  type="date" ng-model="startDate">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p><span class="glyphicon glyphicon-calendar"></span> To Date: </p>
+				</td>
+				<td>
+					<input class="form-control"  type="date" ng-model="endDate">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p><span class="glyphicon glyphicon-gbp"></span> Cost: </p>
+				</td>
+				<td>
+					<input class="form-control"  type="text" ng-model="enquiryDetails.cost">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p><span class="glyphicon glyphicon-user"></span> Responder: </p>
+				</td>
+				<td>
+					<input class="form-control"  type="text" ng-model="enquiryDetails.responder">
+				</td>
+			</tr>
+		</table>
+		
+		<div class="pull-right">
+			<button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+			<button class="btn btn-primary" ng-click="submit()">Submit</button>
+		</div>
+</div>
+
+
+

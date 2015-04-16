@@ -1,0 +1,54 @@
+<!doctype html>
+<html ng-app = "customPortal">
+	<head>
+		<title>Custom Portal</title>
+		<meta charset="utf-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+    	<script src="samphireCottage.js"></script>				
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="portal.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		
+	</head>
+	<body ng-controller="portalController">
+		
+		<div class="container header-container">
+			<div class="row header-row headerDiv" id="header">
+				<div class="col-md-9">
+					<img src="images/samp_header.jpg" class="img-responsive" style="max-width: 30%; padding:10px;" alt="Samphire Logo">
+				</div>
+				<div class="col-md-3">
+					
+					<div class="text-info" style="padding-top:50px;">
+						{{user.firstName}} {{user.lastName}} <button class="btn btn-link" ng-click="logOut()">Log Out</button>
+					</div>	
+					
+				</div>
+			</div>
+		</div>
+		
+		<div class="container body-container">
+			<div class="row body-row" >
+				<div class="col-md-4 taskListDiv">				
+					
+					<h3 style="display: inline-block;"> Task List </h3>
+					<!--<button class="btn btn-link" ng-click="getTaskList()" style="float:right; padding-top: 24px;">Refresh</button>-->
+					<a href="" ng-click="getTaskList()" style="float:right; padding-top: 24px;">Refresh</a>
+					<table class="table table-hover">
+						<th> ID </th>
+						<th> Name </th>
+						<tr ng-repeat="task in tasks.data">
+							 <td>{{task.id}}</td> 
+							 <td><a href="#{{task.formKey}}/{{task.id}}">{{task.name}}</a></td>
+						</tr>			
+					</table>
+				</div>
+				
+				<div class="col-md-8 taskViewerDiv" ng-view=""></div>
+
+			</div>
+		</div>
+	</body>
+</html>

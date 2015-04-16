@@ -1,0 +1,22 @@
+<div>		
+		<div class="text-center"><h3>Create New Template</h3></div>
+		</br>
+		
+		<h4> Template Name: </h4>
+		<input type="text" class="form-control" ng-model="newTemplateJSON.variables[1].value.shortName">
+		
+		</BR>
+		
+		<h4> Template Body: </h4>
+		<textarea class="form-control" rows="10" cols="80" elastic ng-model="newTemplateJSON.variables[1].value.template"></textarea>
+		
+		</BR></BR>
+		
+		<div class="pull-right">
+			<button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+			<button class="btn btn-primary" ng-click="done()">Done</button>
+		</div>
+</div>
+
+
+
