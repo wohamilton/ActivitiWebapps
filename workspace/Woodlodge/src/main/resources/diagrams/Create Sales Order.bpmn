@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="createSalesOrder" name="Create Sales Order" isExecutable="true" activiti:candidateStarterGroups="wlsalesoffice,wlsalesrep">
+    <startEvent id="startevent2" name="Start"></startEvent>
+    <scriptTask id="scripttask1" name="Create Order Object" scriptFormat="javascript" activiti:autoStoreVariables="false">
+      <script>java.lang.System.out.println("customerId: " + customerId);
+java.lang.System.out.println("item1StockCode: " + item1StockCode);
+java.lang.System.out.println("item1Qty: " + item1Qty);
+java.lang.System.out.println("item1Price: " + item1Price);
+java.lang.System.out.println("item2StockCode: " + item2StockCode);
+java.lang.System.out.println("item2Qty: " + item2Qty);
+java.lang.System.out.println("item2Price: " + item2Price);
+      		
+var order ="{'orderRequest': {'id': 'ORDER_REQ123','date': '01/01/2015','seller': {'id': 'SELLER123','name': 'Tom Brown'}, 'customer': {'id': '" + customerId + "','name': 'Norton Green Farm Nurseries','isExistingCustomer': 'true'},'item': [{'stockCode': '" + item1StockCode + "','name': 'Red Pot','quantity': " + item1Qty + ",'agreedPrice': '" + item1Price + "'},{'stockCode': '" + item2StockCode + "','name': 'Green Pot','quantity':" + item2Qty + ",'agreedPrice': '" + item2Price + "'},]}}";
+     		
+execution.setVariable("orderRequest", order);
+		</script>
+    </scriptTask>
+    <sequenceFlow id="flow13" sourceRef="startevent2" targetRef="servicetask1"></sequenceFlow>
+    <serviceTask id="servicetask1" name="Check Stock Levels" activiti:class="javaClasses.CheckStockLevels">
+      <extensionElements>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[Check Stock Levels]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="order">
+          <activiti:expression>${orderRequest}</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="exclusivegateway1" name="Is Stock Available?"></exclusiveGateway>
+    <serviceTask id="servicetask2" name="Create Stock Reservation" activiti:class="javaClasses.CreateStockReservation">
+      <extensionElements>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[Create Stock Reservation]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="order">
+          <activiti:expression>${orderRequest}</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="servicetask3" name="Create Sales Order" activiti:class="javaClasses.CreateSalesOrder">
+      <extensionElements>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[Create Sales Order]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="order">
+          <activiti:expression>${orderRequest}</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow2" sourceRef="servicetask1" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow3" name="Yes" sourceRef="exclusivegateway1" targetRef="servicetask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isStockAvailable == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="servicetask2" targetRef="servicetask3"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="servicetask3" targetRef="usertask3"></sequenceFlow>
+    <userTask id="usertask1" name="Notify Sales Rep" activiti:candidateGroups="wlsalesrep" activiti:formKey="notifySalesRep">
+      <extensionElements>
+        <activiti:formProperty id="itemOutOfStock" name="Item Out of Stock" type="string" expression="${itemsOutOfStock}" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="decision" name="Decision" type="enum" variable="decision">
+          <activiti:value id="continue" name="Continue"></activiti:value>
+          <activiti:value id="cancel" name="Cancel"></activiti:value>
+        </activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask2" name="Notify Sales Office" activiti:candidateGroups="wlsalesoffice" activiti:formKey="notifySalesOffice">
+      <extensionElements>
+        <activiti:formProperty id="itemOutOfStock" name="Item Out of Stock" type="string" expression="${itemsOutOfStock}" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="decision" name="Decision" type="enum" variable="decision">
+          <activiti:value id="continue" name="Continue"></activiti:value>
+          <activiti:value id="cancel" name="Cancel"></activiti:value>
+        </activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="isContinue" name="Continue With Order?"></exclusiveGateway>
+    <sequenceFlow id="flow6" name="No" sourceRef="exclusivegateway1" targetRef="scripttask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isStockAvailable == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="usertask2" targetRef="isContinue"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <serviceTask id="servicetask4" name="Create Back Order" activiti:class="javaClasses.PrintToLog">
+      <extensionElements>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[Create Back Order]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow10" sourceRef="isContinue" targetRef="servicetask4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${decision == "continue"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow11" sourceRef="servicetask4" targetRef="servicetask3"></sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="isContinue" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${decision=="cancel"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="usertask1" targetRef="isContinue"></sequenceFlow>
+    <scriptTask id="scripttask2" name="Set Items Out of Stock" scriptFormat="javascript" activiti:autoStoreVariables="false">
+      <script>java.lang.System.out.println("******************IN*****************");
+
+
+var jsonObj = JSON.parse(orderRequest);
+
+var itemsLength = jsonObj.items.length;
+java.lang.System.out.println("hello" + itemsLength);
+var itemsOutOfStock = new Array();
+var itemsString = "";
+
+var count = 0;
+
+for (var i = 0; i&lt;itemsLength; i++){
+    if (!jsonObj.items[i].isInStock){
+        itemsOutOfStock[count] = jsonObj.items[i].stockCode; 
+        count++;     
+    } 
+}
+
+for (var i=0; i&lt;itemsOutOfStock.length; i++){
+    if (i ==  itemsOutOfStock.length -1){
+        itemsString += itemsOutOfStock[i];
+    }else{
+        itemsString += itemsOutOfStock[i] + ", " ;   
+    }
+}
+
+execution.setVariable("itemsOutOfStock", itemsString);
+java.lang.System.out.println("itemsString: " + itemsString);
+</script>
+    </scriptTask>
+    <sequenceFlow id="flow16" sourceRef="scripttask2" targetRef="usertask1"></sequenceFlow>
+    <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="usertask1" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow17" sourceRef="boundarytimer1" targetRef="usertask2"></sequenceFlow>
+    <userTask id="usertask3" name="Completion Confirmation" activiti:assignee="kermit" activiti:formKey="completionConfirmation"></userTask>
+    <sequenceFlow id="flow18" sourceRef="usertask3" targetRef="endevent1"></sequenceFlow>
+    <dataObject id="orderRequest" name="orderRequest" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="isStockAvailable" name="isStockAvailable" itemSubjectRef="xsd:boolean">
+      <extensionElements>
+        <activiti:value>false</activiti:value>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_createSalesOrder">
+    <bpmndi:BPMNPlane bpmnElement="createSalesOrder" id="BPMNPlane_createSalesOrder">
+      <bpmndi:BPMNShape bpmnElement="startevent2" id="BPMNShape_startevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="121.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="275.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="429.0" y="47.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask2" id="BPMNShape_servicetask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="815.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask3" id="BPMNShape_servicetask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="815.0" y="273.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1100.0" y="283.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="397.0" y="219.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="461.0" y="354.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isContinue" id="BPMNShape_isContinue">
+        <omgdc:Bounds height="40.0" width="40.0" x="595.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="598.0" y="433.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask4" id="BPMNShape_servicetask4">
+        <omgdc:Bounds height="55.0" width="105.0" x="685.0" y="273.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="397.0" y="133.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="30.0" width="30.0" x="410.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask3" id="BPMNShape_usertask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="960.0" y="273.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="75.0" y="67.0"></omgdi:waypoint>
+        <omgdi:waypoint x="275.0" y="67.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="380.0" y="67.0"></omgdi:waypoint>
+        <omgdi:waypoint x="429.0" y="67.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="469.0" y="67.0"></omgdi:waypoint>
+        <omgdi:waypoint x="815.0" y="67.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="20.0" x="479.0" y="67.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="867.0" y="95.0"></omgdi:waypoint>
+        <omgdi:waypoint x="867.0" y="273.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="920.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="449.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="449.0" y="133.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="13.0" x="459.0" y="87.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="513.0" y="354.0"></omgdi:waypoint>
+        <omgdi:waypoint x="513.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="595.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="635.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="685.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="790.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="815.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="615.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="615.0" y="433.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="502.0" y="246.0"></omgdi:waypoint>
+        <omgdi:waypoint x="615.0" y="246.0"></omgdi:waypoint>
+        <omgdi:waypoint x="615.0" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="449.0" y="188.0"></omgdi:waypoint>
+        <omgdi:waypoint x="449.0" y="219.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="425.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="424.0" y="382.0"></omgdi:waypoint>
+        <omgdi:waypoint x="461.0" y="381.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="1065.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1100.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
